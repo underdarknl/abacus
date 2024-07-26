@@ -1,31 +1,46 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
 import { PollingStationProgress } from "app/component/pollingstation/PollingStationProgress";
 
-import { PollingStationFormController, useElection } from "@kiesraad/api";
+import { PollingStationFormController, PollingStationsContext, useElection } from "@kiesraad/api";
 import { IconCross } from "@kiesraad/icon";
-import { Badge, Button, Modal, PollingStationNumber, WorkStationNumber } from "@kiesraad/ui";
+import {
+  Badge,
+  Button,
+  Modal,
+  PollingStationNumber,
+  Spinner,
+  WorkStationNumber,
+} from "@kiesraad/ui";
 
 export function PollingStationLayout() {
   const { pollingStationId } = useParams();
   const { election } = useElection();
+  const { pollingStations, pollingStationsLoading } = useContext(PollingStationsContext);
+  const pollingStation = pollingStations.find(
+    (ps) => ps.number === parseInt(pollingStationId ?? "", 10),
+  );
   const [openModal, setOpenModal] = useState(false);
 
   function changeDialog() {
     setOpenModal(!openModal);
   }
 
+  if (pollingStationsLoading || !pollingStation) {
+    return <Spinner />;
+  }
+
   return (
     <PollingStationFormController
       election={election}
-      pollingStationId={parseInt(pollingStationId || "0")}
+      pollingStation={pollingStation}
       entryNumber={1}
     >
       <header>
         <section>
-          <PollingStationNumber>{pollingStationId}</PollingStationNumber>
-          <h1>Fluisterbosdreef 8</h1>
+          <PollingStationNumber>{pollingStation.number}</PollingStationNumber>
+          <h1>{pollingStation.name}</h1>
           <Badge type="first_entry" />
         </section>
         <section>

@@ -4,13 +4,14 @@ import {
   ApiResponseErrorData,
   DataEntryResponse,
   Election,
+  PollingStation,
   PollingStationResults,
   usePollingStationDataEntry,
 } from "@kiesraad/api";
 
 export interface PollingStationFormControllerProps {
   election: Required<Election>;
-  pollingStationId: number;
+  pollingStation: PollingStation;
   entryNumber: number;
   children: React.ReactNode;
 }
@@ -58,12 +59,12 @@ export const PollingStationControllerContext = React.createContext<
 
 export function PollingStationFormController({
   election,
-  pollingStationId,
+  pollingStation,
   entryNumber,
   children,
 }: PollingStationFormControllerProps) {
   const [doRequest, { data, loading, error }] = usePollingStationDataEntry({
-    polling_station_id: pollingStationId,
+    polling_station_id: pollingStation.id,
     entry_number: entryNumber,
   });
 

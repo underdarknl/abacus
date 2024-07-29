@@ -167,6 +167,28 @@ pub async fn polling_station_list(
     }))
 }
 
+/// Get a single polling station
+#[utoipa::path(
+    get,
+    path = "/api/polling_stations/{polling_station_id}",
+    responses(
+        (status = 200, description = "Polling station", body = PollingStation),
+        (status = 404, description = "Not found", body = ErrorResponse),
+        (status = 500, description = "Internal server error", body = ErrorResponse),
+    ),
+    params(
+        ("polling_station_id" = u32, description = "Polling station database id"),
+    ),
+)]
+pub async fn polling_station_details(
+    State(polling_stations): State<PollingStations>,
+    Path(polling_station_id): Path<u32>,
+) -> Result<JsonResponse<PollingStation>, APIError> {
+    Ok(JsonResponse(
+        polling_stations.get(polling_station_id).await?,
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use sqlx::{query, SqlitePool};
